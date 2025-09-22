@@ -2,31 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>TikTok Login Demo</title>
+    <title>TikTok Sandbox Login Demo</title>
 </head>
 <body>
-<h1>TikTok Login Demo</h1>
+<h1>TikTok Sandbox Login Demo</h1>
 
 <!-- Button login -->
-<button id="tiktok-login-btn">Login with TikTok 2</button>
+<button id="tiktok-login-btn">Login with TikTok</button>
 
 <!-- Display user info -->
 <div id="user-info" style="margin-top: 20px;"></div>
 
 <script>
-    const CLIENT_KEY = "sbaw19mok2vp4bxwwh"; // TikTok App Client Key
-    // const REDIRECT_URI = "https://tiktok-verify-two.vercel.app/callback.html"; // URL phải match app setting
+    const CLIENT_KEY = "sbaw19mok2vp4bxwwh"; // Sandbox client key
     const REDIRECT_URI = "https://tiktok-verify-hajkyzngv-ducdat2793s-projects.vercel.app/callback.html";
 
-    document.getElementById('tiktok-login-btn').addEventListener('click', () => {
-        // Build TikTok OAuth URL
-        const state = Math.random().toString(36).substring(2); // random string
-        const scope = encodeURIComponent("user.info.basic"); // scope demo
-        const oauthUrl = `https://www.tiktok.com/v2/auth/authorize/?response_type=code&client_key=${CLIENT_KEY}&scope=${scope}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
+    // Generate random state
+    const state = Math.random().toString(36).substring(2);
 
-        // Redirect user to TikTok login
+    // PKCE: create code_verifier & code_challenge
+    function base64urlEncode(str) {
+        return btoa(String.fromCharCode.apply(null, new Uint8Array(str)))
+            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    async function sha256(verifier) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(verifier);
+        const hash = await crypto.subtle.digest('SHA-256', data);
+        return base64urlEncode(hash);
+    }
+
+    async function startLogin() {
+        const codeVerifier = Math.random().toString(36).substring(2, 18);
+        const codeChallenge = await sha256(codeVerifier);
+
+        // Lưu codeVerifier vào localStorage để dùng khi exchange code (demo)
+        localStorage.setItem("code_verifier", codeVerifier);
+
+        const oauthUrl = `https://www.tiktok.com/v2/auth/authorize/` +
+            `?response_type=code` +
+            `&client_key=${CLIENT_KEY}` +
+            `&scope=user.info.basic` +
+            `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+            `&state=${state}` +
+            `&code_challenge=${codeChallenge}` +
+            `&code_challenge_method=S256`;
+
         window.location.href = oauthUrl;
-    });
+    }
+
+    document.getElementById('tiktok-login-btn').addEventListener('click', startLogin);
 </script>
 </body>
 </html>

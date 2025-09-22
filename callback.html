@@ -2,29 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>TikTok OAuth Callback</title>
+    <title>TikTok Callback</title>
 </head>
 <body>
-<h1>TikTok OAuth Callback</h1>
-<div id="result"></div>
+<h1>TikTok Callback</h1>
+<div id="user-info"></div>
 
 <script>
-    // Parse URL query params
+    // Parse URL params
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const state = params.get("state");
-    const error = params.get("error");
 
-    const resultDiv = document.getElementById("result");
+    document.getElementById("user-info").innerText = `Authorization code: ${code}\nState: ${state}`;
 
-    if (error) {
-        resultDiv.innerHTML = `<p style="color:red;">Login failed: ${error}</p>`;
-    } else if (code) {
-        resultDiv.innerHTML = `<p>Login success!</p><p>Authorization code: ${code}</p>`;
-        // TODO: In a real app, you send this code to your backend to exchange for access_token
-    } else {
-        resultDiv.innerHTML = "<p>No code received.</p>";
-    }
+    // Exchange code for access token should be done on backend (requires client_secret)
+    // Sandbox: front-end demo sẽ hiển thị code thôi
 </script>
 </body>
 </html>
