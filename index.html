@@ -1,11 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>TikTok Login Demo</title>
 </head>
 <body>
-<h1>Login with TikTok</h1>
-<!--<a href="/oauth2/authorization/tiktok">Login via TikTok</a>-->
-<h1>Hello Techasians</h1>
+<h1>TikTok Login Demo</h1>
+
+<!-- Button login -->
+<button id="tiktok-login-btn">Login with TikTok</button>
+
+<!-- Display user info -->
+<div id="user-info" style="margin-top: 20px;"></div>
+
+<script>
+    const CLIENT_KEY = "YOUR_CLIENT_KEY"; // TikTok App Client Key
+    const REDIRECT_URI = "https://<your-site>.vercel.app/callback.html"; // URL phải match app setting
+
+    document.getElementById('tiktok-login-btn').addEventListener('click', () => {
+        // Build TikTok OAuth URL
+        const state = Math.random().toString(36).substring(2); // random string
+        const scope = encodeURIComponent("user.info.basic"); // scope demo
+        const oauthUrl = `https://www.tiktok.com/v2/auth/authorize/?response_type=code&client_key=${CLIENT_KEY}&scope=${scope}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
+
+        // Redirect user to TikTok login
+        window.location.href = oauthUrl;
+    });
+</script>
 </body>
 </html>
